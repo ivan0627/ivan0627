@@ -1,7 +1,7 @@
-- 👋 Hi, I’m @ivan0627
-- 👀 I’m interested in web development and cybersecurity
+- 👋 Hi, I’m Ivan
 - 🌱 I’m currently in a FullStack learning path
 - 💞️ I’m looking to collaborate on any projects related to web development
+- 👀 This is my LinkedIn https://www.linkedin.com/in/iván-santiago-galindo-679484168/
 - 📫 How to reach me: santiagog627@gmail.com / igalind51753@universidadean.edu.co
 
 <!---
