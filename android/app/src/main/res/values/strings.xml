@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lockout</string>
+    <string name="accessibility_service_label">Lockout app blocker</string>
+    <string name="accessibility_service_description">Lockout uses this service only to
+        detect when an app you chose to block is opened, so it can show your blocking
+        screen until you complete your training goal. It does not read screen content
+        or collect any data.</string>
+    <string name="shield_title">Locked out 🔒</string>
+    <string name="shield_subtitle">%1$d min at the gym to unlock. Earn it.</string>
+    <string name="session_notification_title">Gym session in progress</string>
+    <string name="session_notification_text">%1$d of %2$d min — keep going 💪</string>
+</resources>
