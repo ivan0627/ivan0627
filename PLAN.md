@@ -1,32 +1,41 @@
-# SUDA — Entrena para desbloquear
+# LOCKOUT — Earn your unlock
 
 > Plan maestro del producto: app móvil que bloquea redes sociales / apps adictivas y solo las desbloquea cuando entrenas de verdad (gym verificado por ubicación + reloj/dispositivo de salud), con capa social opcional.
 
-**Estado:** Documento fundacional v1 · Agosto 2026
+**Estado:** Documento fundacional v1.1 · Agosto 2026
 **Autor:** Ivan (product owner) + Claude (planificación)
 
 ---
 
 ## 1. Nombre
 
-### Recomendación principal: **SUDA**
+**Requisito:** app nativamente en inglés, dirigida principalmente al usuario norteamericano; el copy se localiza automáticamente según el idioma del teléfono (inglés como idioma base, español/portugués/etc. vía localización estándar de iOS/Android).
 
-- "Suda" = imperativo de sudar en español. Corto, pronunciable en cualquier idioma, agresivo y memorable.
-- Tagline natural: **"Suda para desbloquear"** / EN: **"Sweat to unlock"**.
-- Funciona como verbo dentro del producto: *"te faltan 20 min de suda"*, *"racha de suda: 12 días"*.
-- Handles probables: `@suda.app`, `sudaapp.com`, `getsuda.com` (verificar disponibilidad de dominio y marca antes de comprometerse).
+### Recomendación principal: **Lockout**
 
-### Alternativas (shortlist)
+- Doble sentido perfecto para el público de gym en EE. UU.: en levantamiento, *lockout* es rematar la repetición (bench press lockout, lockout strength) — y a la vez tus apps están *locked out* hasta que entrenes. Cualquier estadounidense que pise un gym conoce la palabra; el resto la entiende igual (lockouts deportivos de NBA/NFL son cultura general).
+- Es una palabra real, corta, agresiva y fácil de decir: *"I'm on Lockout"*, *"my Instagram is locked out until I hit the gym"*.
+- Taglines naturales: **"Earn your unlock."** / **"Your feed opens when you show up."** / **"Lift the lock."**
+- Ícono obvio: candado + barra de pesas.
+- Handles a verificar: `lockout.app`, `getlockout.com`, `@lockoutapp` (verificar marca y dominios antes de comprometerse; "Lockout" a secas puede requerir registrarse como "Lockout: Sweat to Unlock" en las stores).
+
+### Alternativas (shortlist, todas nativas en inglés)
 
 | Nombre | Idea | Pros | Contras |
 |---|---|---|---|
-| **GymLock** | Descriptivo puro | Se entiende en 1 segundo | Genérico, difícil de registrar como marca |
-| **Earnit** | "Gánatelo": el scroll se gana | Concepto potente, global | Ya existen productos con nombres similares |
-| **Repz** | Reps del gym | Gen-Z, corto | No comunica el bloqueo |
-| **Forge** | Te forjas antes de consumir | Premium, aspiracional | Muy usado en fitness |
-| **Candado** | El candado del gym que cierra tus apps | Bilingüe-friendly, visual (ícono obvio) | Largo en inglés (Padlock) |
+| **Spotter** | El compañero que te cuida la barra… y tu tiempo | Término 100 % gym-americano, encaja con la capa social (tu crew te "spotea") | Comunica lo social, no el bloqueo |
+| **Locked In** | Slang actual ("I'm locked in" = enfocado al máximo) | Muy Gen-Z/atleta, doble sentido con apps locked | Demasiado cerca de "LinkedIn" en sonido y escritura |
+| **Earned** | El scroll no se regala, se gana | Concepto puro del producto, premium | Menos energía de gym; difícil de poseer como marca |
+| **GymKey** | Tu gym es la llave de tu teléfono | Se entiende en un segundo | Descriptivo/genérico, poco carácter |
+| **Gains** | No gains, no grams | Slang de gym universal en EE. UU. | No comunica bloqueo; muy usado en apps fitness |
 
-**Decisión sugerida:** avanzar con **SUDA** como nombre de trabajo; validar marca/dominio en paralelo. Todo este documento usa SUDA como nombre provisional.
+**Decisión sugerida:** avanzar con **Lockout** como nombre de trabajo; validar marca/dominio en paralelo (plan B: **Spotter**, que además refuerza la visión social de largo plazo). Todo este documento usa Lockout como nombre provisional.
+
+### Idiomas
+
+- Idioma base y de marketing: **inglés (en-US)**. Todo el producto se escribe primero en inglés.
+- Localización automática por idioma del dispositivo (String Catalogs en iOS, `strings.xml` por locale en Android): es-419/es-MX y es-ES en el lanzamiento (mercado natural secundario), después pt-BR, fr, de.
+- El nombre **Lockout no se traduce** — es marca; solo se localizan taglines y UI.
 
 ---
 
@@ -34,7 +43,7 @@
 
 **Problema:** la gente pierde 3–5 h/día en redes sociales y a la vez "no tiene tiempo" para entrenar. Las apps de bloqueo existentes (Brick, one sec, Opal) bloquean, pero el desbloqueo es arbitrario (tocar un NFC, esperar un timer). No exigen nada valioso a cambio.
 
-**Propuesta:** SUDA convierte el tiempo de pantalla en una **recompensa que se gana entrenando**. Tus apps bloqueadas se abren solo cuando:
+**Propuesta:** Lockout convierte el tiempo de pantalla en una **recompensa que se gana entrenando**. Tus apps bloqueadas se abren solo cuando:
 
 1. Estuviste físicamente en tu gym el tiempo mínimo configurado (≥ 15 min, default 45 min), **verificado por ubicación**, y/o
 2. Completaste **el reto del día**, y/o
@@ -42,7 +51,7 @@
 
 **Diferenciadores vs Brick:**
 
-| | Brick | SUDA |
+| | Brick | Lockout |
 |---|---|---|
 | Desbloqueo | Tocar el brick físico (NFC) | Entrenamiento real verificado |
 | Hardware | Requiere comprar el brick | Ninguno (el "brick" es tu gym) |
@@ -62,7 +71,7 @@ Estas son las restricciones duras de plataforma que definen todo el diseño. Ser
 
 **iOS — Screen Time API (la única vía legítima, la misma que usa Brick):**
 - Frameworks: `FamilyControls` + `ManagedSettings` + `DeviceActivity`.
-- El usuario autoriza a SUDA como app de control; elige qué apps/categorías/sitios web bloquear con `FamilyActivityPicker` (Apple no nos deja ver *cuáles* son — son tokens opacos, bueno para privacidad).
+- El usuario autoriza a Lockout como app de control; elige qué apps/categorías/sitios web bloquear con `FamilyActivityPicker` (Apple no nos deja ver *cuáles* son — son tokens opacos, bueno para privacidad).
 - `ManagedSettingsStore.shield` aplica el bloqueo; podemos personalizar la pantalla de escudo ("Te faltan 23 min de gym para desbloquear").
 - **Requiere el entitlement `com.apple.developer.family-controls` para distribución**: hay que solicitarlo a Apple con justificación. Brick, Opal y one sec lo tienen; el caso de uso "bienestar digital" es aprobable, pero es un trámite con semanas de espera → **pedirlo en la semana 1 del proyecto**.
 - Bloqueo de sitios web: `ManagedSettings` cubre Safari; para otros navegadores se bloquea el navegador como app.
@@ -77,7 +86,7 @@ Estas son las restricciones duras de plataforma que definen todo el diseño. Ser
 **Ninguna plataforma permite que una app de consumo sea imposible de desinstalar.** Brick tampoco lo es: su fuerza es que desbloquear exige el objeto físico. Lo que sí podemos construir (y es lo que hace la categoría):
 
 - **iOS:**
-  - Mientras el shield de Screen Time está activo, podemos **bloquear también los Ajustes y la App Store** en "Modo estricto", lo que en la práctica impide desinstalar SUDA o revocar el permiso sin cumplir el entrenamiento.
+  - Mientras el shield de Screen Time está activo, podemos **bloquear también los Ajustes y la App Store** en "Modo estricto", lo que en la práctica impide desinstalar Lockout o revocar el permiso sin cumplir el entrenamiento.
   - Guía al usuario para activar en Ajustes → Tiempo en pantalla → "No permitir eliminar apps" (restricción del sistema, opcional, la activa él).
 - **Android:**
   - Detectar el intento de abrir Ajustes/desinstalación con el `AccessibilityService` y cubrirlo con el overlay del "Modo estricto".
@@ -150,7 +159,7 @@ Desbloqueo alternativo para días sin gym:
 - Reto del día (5–6 plantillas de reto, rotación diaria).
 
 **Estadísticas personales**
-- Tiempo en apps bloqueadas (antes/después de SUDA) vs tiempo entrenado — el gráfico insignia del producto: **"scroll vs sweat"**.
+- Tiempo en apps bloqueadas (antes/después de Lockout) vs tiempo entrenado — el gráfico insignia del producto: **"scroll vs sweat"**.
 - Racha de días cumplidos, minutos de gym semanales, calorías activas.
 
 **Cuenta y backend**
@@ -263,7 +272,7 @@ flowchart TD
 
 - **Freemium.**
   - Gratis: bloqueo básico, 1 gym, modo confianza, retos del día, estadísticas de 7 días.
-  - **SUDA Pro (~4,99 US$/mes o 39,99/año):** modo estricto largo, multi-gym, modo prueba biométrico, crews y retos de grupo, historial completo, widgets.
+  - **Lockout Pro (~4,99 US$/mes o 39,99/año):** modo estricto largo, multi-gym, modo prueba biométrico, crews y retos de grupo, historial completo, widgets.
 - Sin publicidad jamás (contradice la misión y las reglas de datos de salud la prohíben con estos datos).
 - v2: B2B gimnasios (retención de socios: "tus socios vienen más si su Instagram depende de ello") — canal de partnership y adquisición.
 
@@ -286,7 +295,7 @@ Equipo asumido: 1 dev iOS, 1 dev Android, 1 backend/fullstack (o 2 personas fuer
 
 ### Primeros 5 pasos concretos (esta semana)
 
-1. Verificar disponibilidad de marca/dominio de **SUDA** (y plan B de la shortlist).
+1. Verificar disponibilidad de marca/dominio de **Lockout** (y plan B de la shortlist).
 2. Crear cuenta Apple Developer y **solicitar el entitlement Family Controls** (el trámite más largo de todo el proyecto).
 3. Crear cuenta Google Play Console y revisar el formulario de declaración de AccessibilityService.
 4. Spike técnico iOS: proyecto mínimo que bloquea 1 app con shield custom y la desbloquea por código.
