@@ -24,6 +24,10 @@ PLAN.md     Product master plan
 - [x] Android spike scaffold: AccessibilityService blocker, full-screen overlay,
       geofence + foreground dwell service, unlock manager, Health Connect stub
 - [x] Backend schema (Postgres/Supabase) + `validate-unlock` edge function skeleton
+- [x] Daily challenges (deterministic rotation) + streak math — **validated against
+      real Postgres 16, 7/7 SQL tests green** (`backend/supabase/tests/`)
+- [x] Interactive UI prototype (`design/prototype.html`): shield, home, challenge,
+      crew and stats screens with a simulated gym session
 - [ ] Apple **Family Controls entitlement** requested (see docs/SETUP.md — blocking, do first)
 - [ ] Google Play Console + Accessibility declaration prepared
 - [ ] Trademark / domain check for "Lockout"

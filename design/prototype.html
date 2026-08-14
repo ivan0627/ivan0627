@@ -1,0 +1,559 @@
+<title>Lockout Prototype</title>
+<style>
+  /* Lockout commits to one visual world: the app itself. Single dark theme,
+     every surface painted explicitly. */
+  :root {
+    --iron: #0c0d10;
+    --graphite: #16181d;
+    --graphite-2: #1e2128;
+    --line: #2a2e37;
+    --chalk: #efede6;
+    --steel: #8a8f9a;
+    --ember: #ff6a2b;
+    --ember-dim: #b34015;
+    --earned: #4cd97b;   /* semantic: unlocked/verified only */
+    --display: "Impact", "Haettenschweiler", "Arial Narrow Bold", "Arial Narrow", sans-serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    background: var(--iron);
+    color: var(--chalk);
+    font-family: var(--body);
+    min-height: 100vh;
+  }
+  a { color: var(--ember); }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ---------- Masthead ---------- */
+  header { text-align: center; margin-bottom: 8px; }
+  .wordmark {
+    font-family: var(--display);
+    font-size: clamp(64px, 12vw, 128px);
+    line-height: .9;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    color: var(--chalk);
+  }
+  .wordmark .lock { color: var(--ember); }
+  .tagline {
+    margin-top: 10px;
+    color: var(--steel);
+    font-size: 15px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .proto-note {
+    margin: 14px auto 0;
+    max-width: 52ch;
+    color: var(--steel);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Stage: annotations + phone ---------- */
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 32px;
+    align-items: center;
+    margin-top: 36px;
+  }
+  .notes { display: flex; flex-direction: column; gap: 28px; }
+  .notes.left { text-align: right; align-items: flex-end; }
+  .note { max-width: 30ch; }
+  .note h3 {
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 6px;
+  }
+  .note p { font-size: 13.5px; line-height: 1.55; color: var(--steel); }
+  .note strong { color: var(--chalk); font-weight: 600; }
+
+  /* ---------- Phone ---------- */
+  .phone {
+    width: 375px;
+    height: 780px;
+    background: #000;
+    border: 1px solid #33363e;
+    border-radius: 46px;
+    padding: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    flex-shrink: 0;
+  }
+  .screen-frame {
+    position: relative;
+    background: var(--iron);
+    border-radius: 36px;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 26px; border-radius: 14px; background: #000; z-index: 5;
+  }
+  .screens { flex: 1; position: relative; }
+  .screen {
+    position: absolute; inset: 0;
+    padding: 56px 22px 16px;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--iron);
+  }
+  .screen.active { display: flex; }
+
+  /* In-phone tab bar */
+  .tabbar {
+    display: flex;
+    border-top: 1px solid var(--line);
+    background: var(--graphite);
+    padding: 8px 6px 14px;
+  }
+  .tabbar button {
+    flex: 1;
+    background: none; border: 0;
+    color: var(--steel);
+    font-family: var(--body);
+    font-size: 10.5px;
+    letter-spacing: .04em;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 4px 0;
+    border-radius: 8px;
+  }
+  .tabbar button .glyph { font-size: 18px; line-height: 1; }
+  .tabbar button.on { color: var(--ember); }
+  .tabbar button:focus-visible,
+  .chips button:focus-visible,
+  .sim:focus-visible,
+  .btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  /* ---------- Shared in-app pieces ---------- */
+  .eyebrow {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--steel);
+  }
+  .card {
+    background: var(--graphite);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .big-num {
+    font-family: var(--display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .01em;
+  }
+  .btn {
+    border: 0; border-radius: 12px;
+    font-family: var(--body); font-weight: 700; font-size: 15px;
+    padding: 14px 18px; cursor: pointer;
+  }
+  .btn.chalky { background: var(--chalk); color: #111; }
+  .btn.emberly { background: var(--ember); color: #180a03; }
+
+  /* ---------- Screen 1: Shield ---------- */
+  #s-shield {
+    background:
+      radial-gradient(120% 60% at 50% -10%, #1c1006 0%, var(--iron) 60%);
+    align-items: center; justify-content: center; text-align: center;
+    gap: 14px;
+  }
+  .shield-app {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--graphite-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 14px;
+    font-size: 13px; color: var(--steel);
+  }
+  .shield-title {
+    font-family: var(--display);
+    font-size: 58px; line-height: .95; text-transform: uppercase;
+    color: var(--chalk);
+  }
+  .shield-title em { font-style: normal; color: var(--ember); }
+  .shield-sub { color: var(--steel); font-size: 15px; max-width: 24ch; line-height: 1.5; }
+  .shield-sub b { color: var(--chalk); }
+  .shield-meta { font-size: 12px; color: var(--steel); margin-top: 10px; }
+  .unlocked-flag { display: none; }
+  .screen.unlocked .locked-flag { display: none; }
+  .screen.unlocked .unlocked-flag { display: block; }
+  .screen.unlocked .shield-title { color: var(--earned); }
+
+  /* ---------- Screen 2: Home ---------- */
+  .home-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .streak {
+    font-size: 13px; font-weight: 700; color: var(--ember);
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-wrap { display: grid; place-items: center; margin: 18px 0 6px; position: relative; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-track { stroke: var(--graphite-2); }
+  .ring-fill { stroke: var(--ember); transition: stroke-dashoffset .9s cubic-bezier(.2,.7,.2,1), stroke .4s; }
+  .ring-label { position: absolute; text-align: center; }
+  .ring-label .big-num { font-size: 64px; color: var(--chalk); display: block; line-height: 1; }
+  .ring-label .of { color: var(--steel); font-size: 13px; }
+  .ring-label .unit { color: var(--steel); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+  .home.done .ring-fill { stroke: var(--earned); }
+  .loc-chip {
+    display: flex; align-items: center; gap: 8px; justify-content: center;
+    color: var(--steel); font-size: 13px; margin-bottom: 14px;
+  }
+  .loc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--earned); }
+  .apps-row { display: flex; gap: 10px; margin-top: 12px; }
+  .app-tile {
+    flex: 1; text-align: center; background: var(--graphite);
+    border: 1px solid var(--line); border-radius: 14px; padding: 12px 4px;
+    font-size: 11px; color: var(--steel);
+  }
+  .app-tile .glyph { font-size: 20px; display: block; margin-bottom: 4px; }
+  .home-note { margin-top: 12px; font-size: 12.5px; color: var(--steel); text-align: center; }
+  .home-note b { color: var(--chalk); }
+
+  /* ---------- Screen 3: Challenge ---------- */
+  .chal-date { margin-bottom: 6px; }
+  .chal-title {
+    font-family: var(--display); font-size: 42px; line-height: 1;
+    text-transform: uppercase; margin: 4px 0 6px;
+  }
+  .chal-desc { color: var(--steel); font-size: 14px; line-height: 1.5; }
+  .bar { background: var(--graphite-2); border-radius: 999px; height: 14px; margin: 16px 0 8px; overflow: hidden; }
+  .bar > div { height: 100%; width: 61%; background: var(--ember); border-radius: 999px; }
+  .bar-nums { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--steel); }
+  .bar-nums b { color: var(--chalk); }
+  .verify-line { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--steel); margin-top: 14px; }
+  .verify-line .ok { color: var(--earned); }
+  .chal-alt { margin-top: auto; text-align: center; font-size: 13px; color: var(--steel); padding-bottom: 6px; }
+
+  /* ---------- Screen 4: Crew ---------- */
+  .feed { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .feed .card { display: flex; gap: 12px; align-items: flex-start; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 15px; color: #180a03;
+    background: var(--ember);
+  }
+  .avatar.alt { background: var(--chalk); color: #111; }
+  .feed p { font-size: 13.5px; line-height: 1.45; color: var(--chalk); }
+  .feed p span { color: var(--steel); }
+  .feed time { font-size: 11px; color: var(--steel); display: block; margin-top: 4px; }
+  .crew-goal { margin-top: 4px; }
+  .crew-goal .bar > div { width: 72%; }
+
+  /* ---------- Screen 5: Stats ---------- */
+  .stat-sum { margin: 12px 0 4px; font-size: 15px; line-height: 1.5; color: var(--steel); }
+  .stat-sum b { color: var(--chalk); }
+  .chart { display: flex; gap: 10px; align-items: flex-end; height: 190px; margin-top: 18px; padding: 0 4px; }
+  .day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .bars { display: flex; gap: 3px; align-items: flex-end; height: 100%; width: 100%; justify-content: center; }
+  .b { width: 40%; border-radius: 4px 4px 0 0; }
+  .b.scroll { background: var(--graphite-2); border: 1px solid var(--line); border-bottom: 0; }
+  .b.sweat { background: var(--ember); }
+  .day span { font-size: 10.5px; color: var(--steel); font-family: var(--mono); }
+  .legend { display: flex; gap: 16px; justify-content: center; margin-top: 14px; font-size: 12px; color: var(--steel); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+  .legend .sw { background: var(--ember); }
+  .legend .sc { background: var(--graphite-2); border: 1px solid var(--line); }
+
+  /* ---------- Controls under the phone ---------- */
+  .controls { text-align: center; margin-top: 26px; }
+  .sim {
+    background: none; color: var(--ember);
+    border: 1px solid var(--ember-dim); border-radius: 999px;
+    font-family: var(--body); font-weight: 700; font-size: 14px;
+    padding: 12px 22px; cursor: pointer;
+  }
+  .sim:hover { background: rgba(255,106,43,.08); }
+  .sim-hint { margin-top: 10px; font-size: 12.5px; color: var(--steel); }
+
+  /* Mobile chips to switch screens (annotations hide) */
+  .chips { display: none; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 20px 0 4px; }
+  .chips button {
+    background: var(--graphite); color: var(--steel);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: var(--body);
+  }
+  .chips button.on { color: var(--chalk); border-color: var(--ember); }
+
+  @media (max-width: 980px) {
+    .notes { display: none; }
+    .stage { grid-template-columns: 1fr; justify-items: center; }
+    .chips { display: flex; }
+  }
+  @media (max-width: 420px) {
+    .phone { width: 100%; height: 730px; padding: 8px; border-radius: 34px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ring-fill { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="wordmark">L<span class="lock">O</span>CKOUT</div>
+    <div class="tagline">Earn your unlock</div>
+    <p class="proto-note">Interactive UI prototype — five core screens, real copy, no code
+      behind them yet. Tap the tab bar (or the chips on mobile) to move between screens.</p>
+  </header>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="stage">
+    <div class="notes left">
+      <div class="note">
+        <h3>Shield</h3>
+        <p>What a blocked app shows instead of opening. Native on both platforms
+          (Screen Time shield / Android overlay). The only button <strong>closes the app</strong> —
+          the way through is training.</p>
+      </div>
+      <div class="note">
+        <h3>Home</h3>
+        <p>One number matters: <strong>minutes at the gym vs. today's goal</strong>.
+          Geofence state ("At your gym") shows live. Ring turns green when earned.</p>
+      </div>
+      <div class="note">
+        <h3>Challenge</h3>
+        <p>The daily alternative for no-gym days. Progress comes from
+          <strong>Apple Health / Health Connect</strong>, never self-reported.</p>
+      </div>
+    </div>
+
+    <div class="phone">
+      <div class="screen-frame">
+        <div class="notch"></div>
+        <div class="screens">
+
+          <!-- 1 · SHIELD -->
+          <section class="screen active" id="s-shield" aria-label="Shield screen">
+            <span class="shield-app">📷 Instagram · blocked</span>
+            <div class="locked-flag">
+              <div class="shield-title">Locked<br><em>Out</em></div>
+              <p class="shield-sub" style="margin:14px auto 0">
+                <b id="shield-remaining">22 min</b> at the gym to unlock.<br>Earn it.</p>
+            </div>
+            <div class="unlocked-flag">
+              <div class="shield-title">Earned</div>
+              <p class="shield-sub" style="margin:14px auto 0">
+                Session verified. Apps open until <b>11:00 PM</b>. Go enjoy — you showed up.</p>
+            </div>
+            <button class="btn chalky" style="margin-top:18px">I'm on it</button>
+            <p class="shield-meta">Strict mode until Aug 28 · 2 emergency keys left</p>
+          </section>
+
+          <!-- 2 · HOME -->
+          <section class="screen home" id="s-home" aria-label="Home screen">
+            <div class="home-head">
+              <div>
+                <div class="eyebrow">Friday, Aug 14</div>
+              </div>
+              <div class="streak">🔥 12-day streak</div>
+            </div>
+            <div class="ring-wrap">
+              <svg width="230" height="230" aria-hidden="true">
+                <circle class="ring-track" cx="115" cy="115" r="100" fill="none" stroke-width="16"/>
+                <circle class="ring-fill" id="ring" cx="115" cy="115" r="100" fill="none"
+                        stroke-width="16" stroke-linecap="round"
+                        stroke-dasharray="628.3" stroke-dashoffset="307.2"/>
+              </svg>
+              <div class="ring-label">
+                <span class="big-num" id="ring-min">23</span>
+                <span class="of">of <b id="ring-goal">45</b> min</span><br>
+                <span class="unit" id="ring-state">at the gym</span>
+              </div>
+            </div>
+            <div class="loc-chip"><span class="loc-dot"></span> At Iron Temple Gym since 6:12 PM</div>
+            <div class="card">
+              <div class="eyebrow" style="margin-bottom:10px">Locked until you finish</div>
+              <div class="apps-row">
+                <div class="app-tile"><span class="glyph">📷</span>Instagram</div>
+                <div class="app-tile"><span class="glyph">🎵</span>TikTok</div>
+                <div class="app-tile"><span class="glyph">▶️</span>YouTube</div>
+                <div class="app-tile"><span class="glyph">✕</span>X</div>
+              </div>
+            </div>
+            <p class="home-note">Finish today's session and apps stay open <b>until 11 PM</b>.</p>
+          </section>
+
+          <!-- 3 · CHALLENGE -->
+          <section class="screen" id="s-challenge" aria-label="Daily challenge screen">
+            <div class="eyebrow chal-date">Today's challenge</div>
+            <h2 class="chal-title">7K before<br>sunset</h2>
+            <p class="chal-desc">Hit 7,000 steps before 6 PM and today counts —
+              no gym required.</p>
+            <div class="card" style="margin-top:18px">
+              <div class="bar"><div></div></div>
+              <div class="bar-nums"><b>4,280</b><span>7,000 steps</span></div>
+              <div class="verify-line"><span class="ok">✓</span> Verified by Apple Health · updated 4 min ago</div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="eyebrow" style="margin-bottom:8px">Also counts today</div>
+              <p class="chal-desc">Any workout on your watch ≥ 45 min — tennis, hike,
+                hoops, your call. Location can't verify those; your watch can.</p>
+            </div>
+            <p class="chal-alt">Rather lift? Your usual gym session works like every day.</p>
+          </section>
+
+          <!-- 4 · CREW -->
+          <section class="screen" id="s-crew" aria-label="Crew screen">
+            <div class="eyebrow">Your crew · Iron Rats</div>
+            <div class="card crew-goal" style="margin-top:12px">
+              <div class="eyebrow" style="margin-bottom:8px">Week goal · 500 crew minutes</div>
+              <div class="bar"><div></div></div>
+              <div class="bar-nums"><b>362</b><span>500 min</span></div>
+            </div>
+            <div class="feed">
+              <div class="card">
+                <div class="avatar">M</div>
+                <div>
+                  <p><b>Maya</b> finished a <b>52-min session</b> 🔥 <span>— 15-day streak</span></p>
+                  <time>18 min ago</time>
+                </div>
+              </div>
+              <div class="card">
+                <div class="avatar alt">D</div>
+                <div>
+                  <p><b>Diego</b> completed <b>Burn 300</b> <span>— challenge day</span></p>
+                  <time>2 h ago</time>
+                </div>
+              </div>
+              <div class="card">
+                <div class="avatar alt">S</div>
+                <div>
+                  <p><b>Sam</b> used an <b>emergency key</b> 👀 <span>— 2 left this month</span></p>
+                  <time>Yesterday</time>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5 · STATS -->
+          <section class="screen" id="s-stats" aria-label="Stats screen">
+            <div class="eyebrow">This week</div>
+            <h2 class="chal-title" style="font-size:38px">Scroll<br>vs sweat</h2>
+            <p class="stat-sum">You traded <b>9.4 h of scrolling</b> for
+              <b>4.2 h of training</b> — scrolling is down 38% since you started.</p>
+            <div class="chart" aria-label="Daily minutes: scrolling versus training">
+              <div class="day"><div class="bars"><div class="b scroll" style="height:78%"></div><div class="b sweat" style="height:30%"></div></div><span>M</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:64%"></div><div class="b sweat" style="height:48%"></div></div><span>T</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:70%"></div><div class="b sweat" style="height:0%"></div></div><span>W</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:52%"></div><div class="b sweat" style="height:55%"></div></div><span>T</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:44%"></div><div class="b sweat" style="height:62%"></div></div><span>F</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:38%"></div><div class="b sweat" style="height:70%"></div></div><span>S</span></div>
+              <div class="day"><div class="bars"><div class="b scroll" style="height:30%"></div><div class="b sweat" style="height:40%"></div></div><span>S</span></div>
+            </div>
+            <div class="legend">
+              <span><i class="sw"></i>Training</span>
+              <span><i class="sc"></i>Blocked-app time</span>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tab bar -->
+        <nav class="tabbar" id="tabbar" aria-label="App sections"></nav>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note">
+        <h3>Crew</h3>
+        <p>Optional social layer. Only derived facts are ever shared —
+          <strong>"went to the gym," never which gym or where</strong>. Emergency keys are
+          visible to your crew if you opt in: accountability by design.</p>
+      </div>
+      <div class="note">
+        <h3>Stats</h3>
+        <p>The signature chart: <strong>scroll vs sweat</strong>. Blocked-app minutes come from
+          Screen Time / Usage Stats; training minutes from verified sessions.</p>
+      </div>
+      <div class="note">
+        <h3>Try it</h3>
+        <p>The button below <strong>simulates a gym session</strong>: watch Home fill to the
+          goal, then check the Shield screen — it flips to earned.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="sim" id="simulate">▶ Simulate a 45-min gym session</button>
+    <p class="sim-hint" id="sim-hint">Ring fills on Home · Shield flips to "Earned"</p>
+  </div>
+</div>
+
+<script>
+  const screens = [
+    { id: "s-shield",    glyph: "🔒", label: "Shield" },
+    { id: "s-home",      glyph: "💪", label: "Home" },
+    { id: "s-challenge", glyph: "🎯", label: "Challenge" },
+    { id: "s-crew",      glyph: "👥", label: "Crew" },
+    { id: "s-stats",     glyph: "📊", label: "Stats" },
+  ];
+  const tabbar = document.getElementById("tabbar");
+  const chips = document.getElementById("chips");
+
+  function show(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+    [...tabbar.children].forEach((b, i) => b.classList.toggle("on", screens[i].id === id));
+    [...chips.children].forEach((b, i) => b.classList.toggle("on", screens[i].id === id));
+  }
+
+  screens.forEach(({ id, glyph, label }) => {
+    const tab = document.createElement("button");
+    tab.innerHTML = `<span class="glyph">${glyph}</span>${label}`;
+    tab.addEventListener("click", () => show(id));
+    tabbar.appendChild(tab);
+    const chip = document.createElement("button");
+    chip.textContent = label;
+    chip.addEventListener("click", () => show(id));
+    chips.appendChild(chip);
+  });
+  show("s-home");
+
+  // --- Gym session simulation -----------------------------------------
+  const CIRC = 628.3, GOAL = 45;
+  let minutes = 23, timer = null;
+  const ring = document.getElementById("ring");
+  const ringMin = document.getElementById("ring-min");
+  const ringState = document.getElementById("ring-state");
+  const shield = document.getElementById("s-shield");
+  const remaining = document.getElementById("shield-remaining");
+  const home = document.getElementById("s-home");
+
+  function render() {
+    ring.style.strokeDashoffset = CIRC * (1 - Math.min(1, minutes / GOAL));
+    ringMin.textContent = minutes;
+    remaining.textContent = Math.max(0, GOAL - minutes) + " min";
+    const done = minutes >= GOAL;
+    home.classList.toggle("done", done);
+    shield.classList.toggle("unlocked", done);
+    ringState.textContent = done ? "earned · unlocked" : "at the gym";
+  }
+
+  document.getElementById("simulate").addEventListener("click", () => {
+    if (timer) return;
+    show("s-home");
+    minutes = Math.min(minutes, 23);
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { minutes = GOAL; render(); return; }
+    timer = setInterval(() => {
+      minutes++;
+      render();
+      if (minutes >= GOAL) {
+        clearInterval(timer); timer = null;
+        document.getElementById("sim-hint").textContent =
+          "Goal hit — open the Shield tab to see the unlocked state.";
+      }
+    }, 90);
+  });
+  render();
+</script>
