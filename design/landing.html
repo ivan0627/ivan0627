@@ -1,0 +1,365 @@
+<title>Lockout</title>
+<style>
+  /* Lockout marketing site — single committed dark theme, brand-explicit. */
+  :root {
+    --iron: #0c0d10;
+    --iron-2: #101218;
+    --graphite: #16181d;
+    --graphite-2: #1e2128;
+    --line: #2a2e37;
+    --chalk: #efede6;
+    --steel: #8a8f9a;
+    --ember: #ff6a2b;
+    --ember-dim: #b34015;
+    --earned: #4cd97b;
+    --display: "Impact", "Haettenschweiler", "Arial Narrow Bold", "Arial Narrow", sans-serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--iron); color: var(--chalk); font-family: var(--body); line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 88px 0; }
+  h2 {
+    font-family: var(--display);
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: .95;
+    text-transform: uppercase;
+    letter-spacing: .01em;
+    text-wrap: balance;
+    margin-bottom: 18px;
+  }
+  h2 em { font-style: normal; color: var(--ember); }
+  .kicker {
+    font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--ember); margin-bottom: 14px; font-weight: 700;
+  }
+  p.lede { color: var(--steel); font-size: 18px; max-width: 58ch; }
+  a { color: var(--ember); }
+
+  /* ---------- Nav ---------- */
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 0;
+  }
+  .nav-mark { font-family: var(--display); font-size: 26px; letter-spacing: .02em; text-transform: uppercase; color: var(--chalk); text-decoration: none; }
+  .nav-mark span { color: var(--ember); }
+  .nav-cta {
+    text-decoration: none; color: var(--chalk); font-weight: 700; font-size: 14px;
+    border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px;
+  }
+  .nav-cta:hover { border-color: var(--ember); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 72px 0 96px; position: relative; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 48px; align-items: center; }
+  .hero h1 {
+    font-family: var(--display);
+    font-size: clamp(64px, 10vw, 132px);
+    line-height: .88;
+    text-transform: uppercase;
+    letter-spacing: .005em;
+    text-wrap: balance;
+  }
+  .hero h1 em { font-style: normal; color: var(--ember); }
+  .hero .sub { margin: 22px 0 30px; color: var(--steel); font-size: 19px; max-width: 46ch; }
+  .hero .sub b { color: var(--chalk); }
+
+  form.signup { display: flex; gap: 10px; max-width: 440px; flex-wrap: wrap; }
+  .signup input {
+    flex: 1; min-width: 220px;
+    background: var(--graphite); color: var(--chalk);
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; font-size: 15px; font-family: var(--body);
+  }
+  .signup input::placeholder { color: var(--steel); }
+  .signup input:focus-visible, .signup button:focus-visible, .nav-cta:focus-visible {
+    outline: 2px solid var(--ember); outline-offset: 2px;
+  }
+  .signup button {
+    background: var(--ember); color: #180a03;
+    border: 0; border-radius: 12px; padding: 14px 22px;
+    font-weight: 800; font-size: 15px; cursor: pointer; font-family: var(--body);
+  }
+  .signup button:hover { background: #ff7c45; }
+  .signup-note { margin-top: 10px; font-size: 12.5px; color: var(--steel); }
+  .signup-done { display: none; color: var(--earned); font-weight: 700; font-size: 16px; }
+  form.signup.done .signup-row, form.signup.done + .signup-note { display: none; }
+  form.signup.done .signup-done { display: block; }
+  .signup-row { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
+
+  /* Hero phone: pure CSS shield mock */
+  .hero-phone {
+    width: 290px; justify-self: center;
+    background: #000; border: 1px solid #33363e; border-radius: 40px;
+    padding: 10px; box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    transform: rotate(4deg);
+  }
+  .hero-screen {
+    border-radius: 31px; padding: 56px 22px 40px; text-align: center;
+    background: radial-gradient(120% 60% at 50% -10%, #1c1006 0%, var(--iron) 60%);
+    border: 1px solid var(--line);
+  }
+  .hp-app {
+    display: inline-block; font-size: 12px; color: var(--steel);
+    background: var(--graphite-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 5px 12px; margin-bottom: 22px;
+  }
+  .hp-title { font-family: var(--display); font-size: 46px; line-height: .95; text-transform: uppercase; }
+  .hp-title em { font-style: normal; color: var(--ember); }
+  .hp-sub { color: var(--steel); font-size: 13.5px; margin: 12px 0 26px; }
+  .hp-sub b { color: var(--chalk); }
+  .hp-btn { background: var(--chalk); color: #111; border-radius: 10px; padding: 11px; font-weight: 700; font-size: 13.5px; }
+
+  /* ---------- The deal (3 steps) ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 44px; }
+  .step { background: var(--graphite); border: 1px solid var(--line); border-radius: 18px; padding: 26px 22px; }
+  .step .n {
+    font-family: var(--mono); color: var(--ember); font-size: 13px; letter-spacing: .1em;
+    display: block; margin-bottom: 14px;
+  }
+  .step h3 { font-size: 20px; margin-bottom: 8px; letter-spacing: -.01em; }
+  .step p { color: var(--steel); font-size: 14.5px; }
+  .step p b { color: var(--chalk); }
+
+  /* ---------- Verification band ---------- */
+  .band { background: var(--iron-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .verify-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
+  .checklist li { display: flex; gap: 14px; align-items: flex-start; }
+  .checklist .tick {
+    color: var(--earned); font-weight: 800; font-size: 15px;
+    background: rgba(76,217,123,.1); border: 1px solid rgba(76,217,123,.3);
+    border-radius: 8px; width: 28px; height: 28px; flex-shrink: 0;
+    display: grid; place-items: center;
+  }
+  .checklist b { display: block; font-size: 16px; }
+  .checklist p { color: var(--steel); font-size: 14.5px; }
+
+  /* ---------- Compare ---------- */
+  .compare-scroll { overflow-x: auto; margin-top: 36px; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 15px; }
+  th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  thead th { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--steel); }
+  thead th.lockout-col { color: var(--ember); }
+  td { color: var(--steel); }
+  td:first-child { color: var(--chalk); font-weight: 600; }
+  td.yes { color: var(--chalk); }
+  td.yes::before { content: "✓ "; color: var(--earned); font-weight: 800; }
+  td.no::before { content: "— "; }
+
+  /* ---------- FAQ ---------- */
+  details {
+    border: 1px solid var(--line); border-radius: 14px;
+    background: var(--graphite); margin-bottom: 10px;
+  }
+  summary {
+    cursor: pointer; padding: 18px 20px; font-weight: 700; font-size: 16px;
+    list-style: none; display: flex; justify-content: space-between; gap: 16px;
+  }
+  summary::after { content: "+"; color: var(--ember); font-weight: 800; }
+  details[open] summary::after { content: "–"; }
+  details p { padding: 0 20px 18px; color: var(--steel); font-size: 15px; max-width: 70ch; }
+  details p b { color: var(--chalk); }
+
+  /* ---------- Final CTA + footer ---------- */
+  .final { text-align: center; }
+  .final form.signup { margin: 0 auto; justify-content: center; }
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 28px 0 40px; color: var(--steel); font-size: 13px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid, .verify-grid { grid-template-columns: 1fr; }
+    .hero-phone { display: none; }
+    .steps { grid-template-columns: 1fr; }
+    section { padding: 64px 0; }
+  }
+</style>
+
+<div class="container">
+  <nav>
+    <a class="nav-mark" href="#">L<span>o</span>ckout</a>
+    <a class="nav-cta" href="#beta">Get early access</a>
+  </nav>
+</div>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1>Your feed opens when you <em>show up.</em></h1>
+      <p class="sub">Lockout blocks the apps that eat your life and unlocks them
+        for one price only: <b>a real workout, verified.</b> Gym by location,
+        everything else by your watch. No hardware to buy, no timer to wait out,
+        no honor system.</p>
+      <form class="signup" id="hero-form" action="#" novalidate>
+        <div class="signup-row">
+          <input type="email" required placeholder="you@email.com" aria-label="Email address">
+          <button type="submit">Join the beta</button>
+        </div>
+        <span class="signup-done">You're on the list. Go train. 💪</span>
+      </form>
+      <p class="signup-note">iOS &amp; Android · Free during beta · No spam, one email when doors open</p>
+    </div>
+    <div class="hero-phone" aria-hidden="true">
+      <div class="hero-screen">
+        <span class="hp-app">📷 Instagram · blocked</span>
+        <div class="hp-title">Locked<br><em>Out</em></div>
+        <p class="hp-sub"><b>22 min</b> at the gym to unlock.<br>Earn it.</p>
+        <div class="hp-btn">I'm on it</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="kicker">The deal</div>
+    <h2>Scroll is no longer <em>free.</em></h2>
+    <p class="lede">The average American spends 4+ hours a day in apps built to keep
+      them sitting. Lockout doesn't nag you about it — it changes the price.</p>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 01</span>
+        <h3>Pick your poison</h3>
+        <p>Instagram, TikTok, YouTube, X — you choose what locks. On iPhone,
+          Apple's design means <b>we never even see your list.</b></p>
+      </div>
+      <div class="step"><span class="n">STEP 02</span>
+        <h3>They stay locked</h3>
+        <p>Opening a blocked app shows your progress, not your feed. Strict mode
+          holds the line for up to 4 weeks — <b>no pause button.</b></p>
+      </div>
+      <div class="step"><span class="n">STEP 03</span>
+        <h3>Training is the key</h3>
+        <p>Hit your minutes at the gym, beat the daily challenge, or log any
+          workout on your watch. <b>You earn your scroll.</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="container verify-grid">
+    <div>
+      <div class="kicker">Verified, not vibes</div>
+      <h2>You can't lie to your <em>own watch.</em></h2>
+      <p class="lede">Every other blocker takes your word for it. Lockout checks.</p>
+    </div>
+    <ul class="checklist">
+      <li><span class="tick">✓</span><div><b>Gym sessions — by location</b>
+        <p>A geofence around your gym counts your minutes. 15-minute minimum,
+          you set the goal. Bathroom breaks don't reset the clock.</p></div></li>
+      <li><span class="tick">✓</span><div><b>Everything else — by your watch</b>
+        <p>Tennis, hoops, trail runs: verified through Apple Health or Health
+          Connect. Works with Apple Watch, Wear OS, Garmin, Fitbit.</p></div></li>
+      <li><span class="tick">✓</span><div><b>Proof mode — for the hardcore</b>
+        <p>Cross-check heart rate and calories against your gym time. Parking in
+          the gym lot with your phone doesn't count. We know the tricks.</p></div></li>
+      <li><span class="tick">✓</span><div><b>Your crew keeps receipts</b>
+        <p>Optional: share your streak and your "scroll vs sweat" ratio. Burn an
+          emergency key and your crew sees it. 👀</p></div></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="kicker">Versus the brick</div>
+    <h2>No hardware. <em>Higher stakes.</em></h2>
+    <div class="compare-scroll">
+      <table>
+        <thead><tr><th></th><th>Brick &amp; friends</th><th class="lockout-col">Lockout</th></tr></thead>
+        <tbody>
+          <tr><td>What unlocks your apps</td><td>Tapping a $59 plastic square</td><td class="yes">A verified workout</td></tr>
+          <tr><td>Hardware to buy</td><td>Yes</td><td class="yes">None — your gym is the key</td></tr>
+          <tr><td>Can you cheat it</td><td>Keep the brick in your pocket</td><td class="yes">Your watch snitches</td></tr>
+          <tr><td>Makes you fitter</td><td class="no">Not its job</td><td class="yes">That's the whole point</td></tr>
+          <tr><td>Crew accountability</td><td class="no">No</td><td class="yes">Streaks, crews, receipts</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="container">
+    <div class="kicker">Straight answers</div>
+    <h2>The fine <em>print.</em></h2>
+    <div style="margin-top: 32px">
+      <details>
+        <summary>Can't I just delete the app?</summary>
+        <p>In strict mode, Lockout locks your settings for the period you chose —
+          on iPhone that includes shielding Settings and the App Store, the same
+          mechanism Brick uses. <b>No consumer app can be literally impossible to
+          remove</b> (anyone claiming otherwise is lying), but getting out early
+          takes a 24-hour cooling-off period or an emergency key your crew can see.
+          The friction is the feature.</p>
+      </details>
+      <details>
+        <summary>What if I can't make the gym today?</summary>
+        <p>The daily challenge has your back: 7K steps before sunset, 300 active
+          calories, any 30-minute workout — verified through your health data, not
+          the honor system. Rest days exist too: schedule up to two a week,
+          24 hours ahead so it's a plan, not a relapse.</p>
+      </details>
+      <details>
+        <summary>What do you do with my location?</summary>
+        <p>It's processed on your phone. Our servers store "trained 47 minutes,"
+          never a map of your life. Your gym's address is never visible to anyone —
+          your crew sees <b>that</b> you trained, never where.</p>
+      </details>
+      <details>
+        <summary>And my health data?</summary>
+        <p>Read-only, used for one thing: proving your workout happened. Platform
+          rules (and ours) forbid using it for ads — it's never sold, never shared.
+          Disconnect anytime; gym-only mode works without it.</p>
+      </details>
+      <details>
+        <summary>Do I need an Apple Watch or fitness band?</summary>
+        <p>No — gym mode works with your phone's location alone. A watch unlocks
+          the good stuff: outdoor sports, proof mode, and bulletproof streaks.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="beta">
+  <div class="container">
+    <div class="kicker">Limited beta · Fall 2026</div>
+    <h2>Earn your <em>unlock.</em></h2>
+    <p class="lede" style="margin: 0 auto 28px">Be first in line when doors open.
+      Beta testers keep Pro free for a year.</p>
+    <form class="signup" id="cta-form" action="#" novalidate>
+      <div class="signup-row">
+        <input type="email" required placeholder="you@email.com" aria-label="Email address">
+        <button type="submit">Join the beta</button>
+      </div>
+      <span class="signup-done">You're on the list. Go train. 💪</span>
+    </form>
+  </div>
+</section>
+
+<div class="container">
+  <footer>
+    <span>© 2026 Lockout. Sweat to unlock.</span>
+    <span>Privacy · Terms · hello@getlockout.com</span>
+  </footer>
+</div>
+
+<script>
+  // Beta signup: front-end only in this preview. Before deploying, point the
+  // submit at the list provider (Buttondown/ConvertKit) or a Supabase table.
+  document.querySelectorAll("form.signup").forEach(form => {
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const email = form.querySelector("input");
+      if (!email.checkValidity()) { email.reportValidity(); return; }
+      form.classList.add("done");
+    });
+  });
+</script>

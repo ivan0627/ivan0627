@@ -28,6 +28,11 @@ PLAN.md     Product master plan
       real Postgres 16, 7/7 SQL tests green** (`backend/supabase/tests/`)
 - [x] Interactive UI prototype (`design/prototype.html`): shield, home, challenge,
       crew and stats screens with a simulated gym session
+- [x] Emergency keys + strict mode server rules (monthly quota, 24 h cooldown,
+      crew visibility opt-in) — 8/8 SQL tests green
+- [x] Full onboarding flow & copy with permission-priming screens (`docs/ONBOARDING.md`)
+- [x] Marketing landing page with beta signup (`design/landing.html` — wire the
+      form to a list provider before deploying)
 - [ ] Apple **Family Controls entitlement** requested (see docs/SETUP.md — blocking, do first)
 - [ ] Google Play Console + Accessibility declaration prepared
 - [ ] Trademark / domain check for "Lockout"
